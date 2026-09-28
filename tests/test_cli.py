@@ -28,3 +28,14 @@ def test_top_must_be_positive(top):
     out = run(["--top", top, "-"], "a")
     assert out.returncode == 2
     assert "--top must be at least 1" in out.stderr
+
+
+def test_words_are_split_on_non_letters_and_compared_case_insensitively():
+    out = run(["-"], "The quick fox.\nThe lazy dog, the end.\n")
+    assert out.returncode == 0
+    assert out.stdout == "3 the\n1 dog\n1 end\n1 fox\n1 lazy\n1 quick\n"
+
+
+def test_apostrophes_join_words():
+    out = run(["-"], "Don't stop; don't.\n")
+    assert out.stdout == "2 don't\n1 stop\n"
