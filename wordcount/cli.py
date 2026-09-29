@@ -6,21 +6,20 @@ Prints one line per word, "<count> <word>", most frequent first.
 """
 
 import argparse
+import re
 import sys
 from collections import Counter
 
 
+WORD = re.compile(r"[^\W_]+(?:'[^\W_]+)*")
+
+
 def count_words(text):
-    counts = Counter()
-    for word in text.split(" "):
-        word = word.strip()
-        if word:
-            counts[word] += 1
-    return counts
+    return Counter(match.group(0).lower() for match in WORD.finditer(text))
 
 
 def rank(counts, top=None):
-    ranked = sorted(counts.items(), key=lambda item: item[1], reverse=True)
+    ranked = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
     if top is not None:
         ranked = ranked[:top]
     return ranked
